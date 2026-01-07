@@ -17,25 +17,21 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 10px; /* Reduzido para telas menores */
+            padding: 10px;
         }
 
         .container {
-            width: 95%; /* Responsivo */
-            max-width: 800px; /* Limite para telas grandes */
+            width: 95%;
+            max-width: 800px;
             margin: 0 auto;
             background: var(--card);
-            padding: 20px; /* Ajustado */
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
         }
 
-        h1 { 
-            text-align: center; 
-            color: var(--primary); 
-            font-size: 1.5rem; /* Ajustável */
-        }
+        h1 { text-align: center; color: var(--primary); font-size: 1.5rem; }
 
         .input-produto {
             width: 100%;
@@ -52,7 +48,15 @@
             gap: 8px;
             margin-bottom: 10px;
             align-items: center;
-            flex-wrap: wrap; /* Permite quebrar linha em celulares pequenos */
+            flex-wrap: wrap;
+        }
+
+        .item-label {
+            flex: 3;
+            min-width: 150px;
+            font-weight: 500;
+            color: #475569;
+            padding: 8px 0;
         }
 
         input {
@@ -62,7 +66,6 @@
             box-sizing: border-box;
         }
 
-        /* Ajuste de largura dos inputs na linha */
         input[type="text"] { flex: 3; min-width: 150px; }
         input[type="number"] { flex: 1; min-width: 80px; }
 
@@ -105,13 +108,19 @@
             text-align: right;
         }
 
-        /* Ajustes para Celulares */
+        .remove-btn { 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            padding: 10px 12px; 
+            cursor: pointer; 
+        }
+
         @media (max-width: 480px) {
-            .item-row { gap: 5px; }
-            input[type="text"] { flex: 100%; order: 1; } /* Nome ocupa linha toda */
-            input[type="number"] { flex: 1; order: 2; }   /* Valor e botão dividem a linha de baixo */
+            .item-label, input[type="text"] { flex: 100%; order: 1; }
+            input[type="number"] { flex: 1; order: 2; }
             .remove-btn { order: 3; }
-            h1 { font-size: 1.2rem; }
         }
 
         @media print {
@@ -121,15 +130,6 @@
             #resultado { display: block !important; background: white; }
             input { border: none; background: transparent; }
             #nome-produto-input { display: none; }
-        }
-
-        .remove-btn { 
-            background: #ef4444; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            padding: 10px 12px; 
-            cursor: pointer; 
         }
     </style>
 </head>
@@ -141,14 +141,13 @@
     <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência">
 
     <div id="lista-itens" class="no-print">
-    </div>
+        </div>
 
-    <button class="btn btn-add no-print" onclick="adicionarItem('', '')">+ Adicionar Novo Item</button>
+    <button class="btn btn-add no-print" onclick="adicionarItemCustom()">+ Adicionar Novo Item</button>
     <button class="btn btn-calc no-print" onclick="calcular()">Calcular Preço Final</button>
 
     <div id="resultado">
         <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0; font-size: 1.2em;">Relatório de Custos</h2>
-        
         <div id="detalhes-relatorio"></div>
         <hr>
         <div id="resumo-calculo"></div>
@@ -168,23 +167,37 @@
 
     const listaDiv = document.getElementById('lista-itens');
 
-    function adicionarItem(nome = '', valor = '') {
+    // Função para itens fixos (apenas label + valor)
+    function carregarItensPadrao() {
+        itensPadrao.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item-row';
+            div.innerHTML = `
+                <div class="item-label">${item}</div>
+                <input type="number" placeholder="R$" step="0.01" class="item-valor" data-nome="${item}">
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+            `;
+            listaDiv.appendChild(div);
+        });
+    }
+
+    // Função para itens novos (permite digitar o nome)
+    function adicionarItemCustom() {
         const div = document.createElement('div');
         div.className = 'item-row';
         div.innerHTML = `
-            <input type="text" placeholder="Item" value="${nome}" class="item-nome">
-            <input type="number" placeholder="R$" step="0.01" class="item-valor" value="${valor}">
+            <input type="text" placeholder="Nome do item" class="item-nome-custom">
+            <input type="number" placeholder="R$" step="0.01" class="item-valor">
             <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
         `;
         listaDiv.appendChild(div);
     }
 
-    itensPadrao.forEach(item => adicionarItem(item));
+    carregarItensPadrao();
 
     function calcular() {
         const nomeProduto = document.getElementById('nome-produto-input').value;
-        const nomes = document.querySelectorAll('.item-nome');
-        const valores = document.querySelectorAll('.item-valor');
+        const rows = document.querySelectorAll('.item-row');
         let somaBase = 0;
         let htmlRelatorio = '';
 
@@ -194,13 +207,22 @@
             document.getElementById('titulo-relatorio').innerText = "Relatório de Custos";
         }
 
-        nomes.forEach((inputNome, index) => {
-            const valor = parseFloat(valores[index].value);
+        rows.forEach(row => {
+            const inputValor = row.querySelector('.item-valor');
+            const valor = parseFloat(inputValor.value);
+            
             if (!isNaN(valor) && valor > 0) {
+                let nomeItem = "";
+                // Verifica se é item padrão (label) ou custom (input)
+                const label = row.querySelector('.item-label');
+                const inputNomeCustom = row.querySelector('.item-nome-custom');
+                
+                nomeItem = label ? label.innerText : (inputNomeCustom.value || 'Item Extra');
+                
                 somaBase += valor;
                 htmlRelatorio += `
                     <div class="res-linha">
-                        <span>${inputNome.value || 'Item'}</span>
+                        <span>${nomeItem}</span>
                         <span>R$ ${valor.toFixed(2)}</span>
                     </div>`;
             }
@@ -227,17 +249,17 @@
 
         document.getElementById('detalhes-relatorio').innerHTML = htmlRelatorio;
         document.getElementById('resumo-calculo').innerHTML = `
-            <div class="res-linha"><strong>Soma dos Itens:</strong> <span>R$ ${somaBase.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Fixo:</span> <span>R$ ${fixoAdicional.toFixed(2)}</span></div>
+            <div class="res-linha"><strong>Soma dos Materiais:</strong> <span>R$ ${somaBase.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Custo Fixo:</span> <span>R$ ${fixoAdicional.toFixed(2)}</span></div>
             <div class="res-linha"><span>Taxas (20%):</span> <span>R$ ${valorTaxas.toFixed(2)}</span></div>
             <div class="res-linha"><span>Imposto (6%):</span> <span>R$ ${valorImposto.toFixed(2)}</span></div>
             <div class="res-linha"><span>Ads (3%):</span> <span>R$ ${valorAds.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Lucro:</span> <span>R$ ${lucroFixo.toFixed(2)}</span></div>
-            <div class="total-final">Total: R$ ${precoFinal.toFixed(2)}</div>
+            <div class="res-linha"><span>Lucro Esperado:</span> <span>R$ ${lucroFixo.toFixed(2)}</span></div>
+            <div class="total-final">Preço Final de Venda: R$ ${precoFinal.toFixed(2)}</div>
         `;
 
         document.getElementById('resultado').style.display = 'block';
-        window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
 </script>
 

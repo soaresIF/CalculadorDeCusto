@@ -132,12 +132,12 @@
     
     <div class="form-group">
         <label>Preço de Venda (Anunciado)</label>
-        <input type="number" id="venda" placeholder="ex: 41.90" step="0.01" value="41.90" oninput="salvarReversa()">
+        <input type="number" id="venda" placeholder="ex: 41.90" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="form-group">
         <label>Custo Inserido (Material + 5,00)</label>
-        <input type="number" id="custoInserido" placeholder="ex: 27.44" step="0.01" value="27.44" oninput="salvarReversa()">
+        <input type="number" id="custoInserido" placeholder="ex: 27.44" step="0.01"  oninput="salvarReversa()">
     </div>
 
     <div class="opcoes">
@@ -162,6 +162,7 @@
     <button class="btn-clear" onclick="limparReversa()" style="margin-bottom: 15px;">Limpar Dados</button>
 
     <button onclick="calcular()">CALCULAR SOBRA REAL</button>
+    <button class="btn-clear" onclick="limparReversa()" style="margin-bottom: 15px;">Limpar Dados</button>
 
     <div id="resultado">
         <div class="line"><span>Venda Bruta:</span> <span class="destaque">R$ <span id="resVenda">0,00</span></span></div>
@@ -269,16 +270,27 @@
         document.getElementById('resultado').style.display = 'block';
     }
     function limparReversa() {
-    if (confirm("Tem certeza? Isso apagará os valores inseridos.")) {
-        // Remove apenas os dados da reversa
+    if (confirm("Deseja apagar todos os valores?")) {
+        // 1. Limpa memória do navegador
         localStorage.removeItem('rev_venda');
         localStorage.removeItem('rev_custo');
         localStorage.removeItem('rev_chkShopeePerc');
         localStorage.removeItem('rev_chkShopeeFixo');
         localStorage.removeItem('rev_chkImposto');
         localStorage.removeItem('rev_chkAds');
-        // Recarrega a página
-        location.reload();
+
+        // 2. ZERA VISUALMENTE OS CAMPOS (Essa é a parte que faltava)
+        document.getElementById('venda').value = "";
+        document.getElementById('custoInserido').value = "";
+        
+        // 3. Reseta checkboxes
+        document.getElementById('chkShopeePerc').checked = true;
+        document.getElementById('chkShopeeFixo').checked = true;
+        document.getElementById('chkImposto').checked = true;
+        document.getElementById('chkAds').checked = false;
+
+        // 4. Esconde o resultado
+        document.getElementById('resultado').style.display = 'none';
     }
 }
 
@@ -288,3 +300,4 @@
 </body>
 
 </html>
+

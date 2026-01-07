@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Custo e Venda</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 10px; /* Reduzido para telas menores */
+        }
+
+        .container {
+            width: 95%; /* Responsivo */
+            max-width: 800px; /* Limite para telas grandes */
+            margin: 0 auto;
+            background: var(--card);
+            padding: 20px; /* Ajustado */
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--primary); 
+            font-size: 1.5rem; /* Ajustável */
+        }
+
+        .input-produto {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap; /* Permite quebrar linha em celulares pequenos */
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Ajuste de largura dos inputs na linha */
+        input[type="text"] { flex: 3; min-width: 150px; }
+        input[type="number"] { flex: 1; min-width: 80px; }
+
+        .btn {
+            cursor: pointer;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: 0.3s;
+            display: block;
+        }
+
+        .btn-add { background: #10b981; color: white; margin-bottom: 20px; width: 100%; }
+        .btn-calc { background: var(--primary); color: white; width: 100%; font-size: 1.1em; }
+        .btn-print { background: #64748b; color: white; margin-top: 10px; width: 100%; }
+
+        #resultado {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: none;
+            word-wrap: break-word;
+        }
+
+        .res-linha {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .total-final {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #059669;
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        /* Ajustes para Celulares */
+        @media (max-width: 480px) {
+            .item-row { gap: 5px; }
+            input[type="text"] { flex: 100%; order: 1; } /* Nome ocupa linha toda */
+            input[type="number"] { flex: 1; order: 2; }   /* Valor e botão dividem a linha de baixo */
+            .remove-btn { order: 3; }
+            h1 { font-size: 1.2rem; }
+        }
+
+        @media print {
+            .no-print, .btn, .remove-btn { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; }
+            #resultado { display: block !important; background: white; }
+            input { border: none; background: transparent; }
+            #nome-produto-input { display: none; }
+        }
+
+        .remove-btn { 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            padding: 10px 12px; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Venda</h1>
+    
+    <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência">
+
+    <div id="lista-itens" class="no-print">
+    </div>
+
+    <button class="btn btn-add no-print" onclick="adicionarItem('', '')">+ Adicionar Novo Item</button>
+    <button class="btn btn-calc no-print" onclick="calcular()">Calcular Preço Final</button>
+
+    <div id="resultado">
+        <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0; font-size: 1.2em;">Relatório de Custos</h2>
+        
+        <div id="detalhes-relatorio"></div>
+        <hr>
+        <div id="resumo-calculo"></div>
+    </div>
+
+    <button class="btn btn-print no-print" onclick="window.print()">Imprimir Relatório</button>
+</div>
+
+<script>
+    const itensPadrao = [
+        "Sola", "Pintura Sola", "Facheta Salto", "Palmilha", "Cabedal", "Estampa", 
+        "Bordado", "Emborrachado", "Enfeite", "Strass", "Tira", "Gorgurão", 
+        "Elastico", "Fivela", "Velcro", "Ilhós", "Cordão", "Caixa", 
+        "Cola/solvente", "Etiqueta", "Linha", "Despesas fixa", "Corte", 
+        "Pesponto", "Montagem", "Enfachetar salto", "Waster"
+    ];
+
+    const listaDiv = document.getElementById('lista-itens');
+
+    function adicionarItem(nome = '', valor = '') {
+        const div = document.createElement('div');
+        div.className = 'item-row';
+        div.innerHTML = `
+            <input type="text" placeholder="Item" value="${nome}" class="item-nome">
+            <input type="number" placeholder="R$" step="0.01" class="item-valor" value="${valor}">
+            <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+        `;
+        listaDiv.appendChild(div);
+    }
+
+    itensPadrao.forEach(item => adicionarItem(item));
+
+    function calcular() {
+        const nomeProduto = document.getElementById('nome-produto-input').value;
+        const nomes = document.querySelectorAll('.item-nome');
+        const valores = document.querySelectorAll('.item-valor');
+        let somaBase = 0;
+        let htmlRelatorio = '';
+
+        if(nomeProduto.trim() !== "") {
+            document.getElementById('titulo-relatorio').innerText = "Produto: " + nomeProduto;
+        } else {
+            document.getElementById('titulo-relatorio').innerText = "Relatório de Custos";
+        }
+
+        nomes.forEach((inputNome, index) => {
+            const valor = parseFloat(valores[index].value);
+            if (!isNaN(valor) && valor > 0) {
+                somaBase += valor;
+                htmlRelatorio += `
+                    <div class="res-linha">
+                        <span>${inputNome.value || 'Item'}</span>
+                        <span>R$ ${valor.toFixed(2)}</span>
+                    </div>`;
+            }
+        });
+
+        if (somaBase === 0) {
+            alert("Insira pelo menos um valor.");
+            return;
+        }
+
+        const fixoAdicional = 4;
+        const lucroFixo = 6;
+        const percTaxas = 0.20; 
+        const percImposto = 0.06; 
+        const percAds = 0.03; 
+        const totalPorcentagens = percTaxas + percImposto + percAds;
+
+        const subtotal = somaBase + fixoAdicional + lucroFixo;
+        const precoFinal = subtotal / (1 - totalPorcentagens);
+
+        const valorTaxas = precoFinal * percTaxas;
+        const valorImposto = precoFinal * percImposto;
+        const valorAds = precoFinal * percAds;
+
+        document.getElementById('detalhes-relatorio').innerHTML = htmlRelatorio;
+        document.getElementById('resumo-calculo').innerHTML = `
+            <div class="res-linha"><strong>Soma dos Itens:</strong> <span>R$ ${somaBase.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Fixo:</span> <span>R$ ${fixoAdicional.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Taxas (20%):</span> <span>R$ ${valorTaxas.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Imposto (6%):</span> <span>R$ ${valorImposto.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Ads (3%):</span> <span>R$ ${valorAds.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Lucro:</span> <span>R$ ${lucroFixo.toFixed(2)}</span></div>
+            <div class="total-final">Total: R$ ${precoFinal.toFixed(2)}</div>
+        `;
+
+        document.getElementById('resultado').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+</script>
+
+</body>
+</html>

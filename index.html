@@ -25,17 +25,29 @@
         .remove-btn { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 10px 12px; cursor: pointer; }
         @media (max-width: 480px) { .item-label, input[type="text"] { flex: 100%; } }
         @media print { .no-print, .btn, .remove-btn { display: none !important; } .container { box-shadow: none; border: none; width: 100%; } #resultado { display: block !important; background: white; } #nome-produto-input { display: none; } }
+        
+        /* Ajuste para o botão de navegação ficar alinhado */
+        .nav-container { text-align: center; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
+<div class="nav-container no-print">
+    <a href="reversa.html"
+    style="color: white; text-decoration: none; background-color: #ef4444; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+    onmouseover="this.style.backgroundColor='#b91c1c'"
+    onmouseout="this.style.backgroundColor='#ef4444'">
+    Ir para Calculadora Reversa ➜
+    </a>
+</div>
+
 <div class="container">
     <h1>Calculadora de Venda</h1>
-    <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência">
+    <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência" oninput="salvarDados()">
 
     <div id="lista-itens" class="no-print"></div>
 
-    <button class="btn btn-add no-print" onclick="adicionarItemCustom()">+ Adicionar Outro Item</button>
+    <button class="btn btn-add no-print" onclick="adicionarItemCustom('', '')">+ Adicionar Outro Item</button>
     <button class="btn btn-calc no-print" onclick="calcular()">CALCULAR PREÇO DE VENDA</button>
 
     <div id="resultado">
@@ -51,23 +63,83 @@
     const itensPadrao = ["Sola", "Pintura Sola", "Facheta Salto", "Palmilha", "Cabedal", "Estampa", "Bordado", "Emborrachado", "Enfeite", "Strass", "Tira", "Gorgurão", "Elastico", "Fivela", "Velcro", "Ilhós", "Cordão", "Caixa", "Cola/solvente", "Etiqueta", "Linha", "Despesas fixa", "Corte", "Pesponto", "Montagem", "Enfachetar salto", "Waster"];
     const listaDiv = document.getElementById('lista-itens');
 
-    function carregarItens() {
+    // Inicialização
+    function init() {
+        carregarItensPadrao();
+        carregarStorage(); // Carrega os dados salvos após criar os campos
+    }
+
+    function carregarItensPadrao() {
         itensPadrao.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'item-row';
-            div.innerHTML = `<div class="item-label">${item}</div><input type="number" step="0.01" class="item-valor"><button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
+            div.className = 'item-row padrao'; // Marcador classe para identificar
+            // Adicionado atributo data-label para facilitar salvamento
+            div.innerHTML = `<div class="item-label">${item}</div><input type="number" step="0.01" class="item-valor" data-label="${item}" oninput="salvarDados()"><button class="remove-btn" onclick="limparInput(this)">X</button>`;
             listaDiv.appendChild(div);
         });
     }
 
-    function adicionarItemCustom() {
+    // Função ajustada para limpar apenas o valor nos itens padrão, não remover a linha
+    function limparInput(btn) {
+        const input = btn.parentElement.querySelector('input');
+        input.value = '';
+        salvarDados();
+    }
+
+    function adicionarItemCustom(nome = '', valor = '') {
         const div = document.createElement('div');
-        div.className = 'item-row';
-        div.innerHTML = `<input type="text" placeholder="Nome do item" class="item-nome-custom"><input type="number" step="0.01" class="item-valor"><button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
+        div.className = 'item-row custom'; // Marcador classe
+        div.innerHTML = `<input type="text" placeholder="Nome do item" class="item-nome-custom" value="${nome}" oninput="salvarDados()"><input type="number" step="0.01" class="item-valor" value="${valor}" oninput="salvarDados()"><button class="remove-btn" onclick="removerCustom(this)">X</button>`;
         listaDiv.appendChild(div);
     }
 
-    carregarItens();
+    function removerCustom(btn) {
+        btn.parentElement.remove();
+        salvarDados();
+    }
+
+    // --- SISTEMA DE STORAGE ---
+    function salvarDados() {
+        // 1. Nome do Produto
+        localStorage.setItem('calc_nome', document.getElementById('nome-produto-input').value);
+
+        // 2. Valores dos Itens Padrão
+        const valoresPadrao = {};
+        document.querySelectorAll('.item-row.padrao .item-valor').forEach(input => {
+            if(input.value) valoresPadrao[input.dataset.label] = input.value;
+        });
+        localStorage.setItem('calc_padrao', JSON.stringify(valoresPadrao));
+
+        // 3. Itens Customizados
+        const customizados = [];
+        document.querySelectorAll('.item-row.custom').forEach(row => {
+            const nome = row.querySelector('.item-nome-custom').value;
+            const valor = row.querySelector('.item-valor').value;
+            if(nome || valor) customizados.push({nome, valor});
+        });
+        localStorage.setItem('calc_custom', JSON.stringify(customizados));
+    }
+
+    function carregarStorage() {
+        // 1. Nome
+        if(localStorage.getItem('calc_nome')) {
+            document.getElementById('nome-produto-input').value = localStorage.getItem('calc_nome');
+        }
+
+        // 2. Padrão
+        const valoresPadrao = JSON.parse(localStorage.getItem('calc_padrao')) || {};
+        document.querySelectorAll('.item-row.padrao .item-valor').forEach(input => {
+            if(valoresPadrao[input.dataset.label]) {
+                input.value = valoresPadrao[input.dataset.label];
+            }
+        });
+
+        // 3. Customizados
+        const customizados = JSON.parse(localStorage.getItem('calc_custom')) || [];
+        customizados.forEach(item => {
+            adicionarItemCustom(item.nome, item.valor);
+        });
+    }
 
     function calcular() {
         const rows = document.querySelectorAll('.item-row');
@@ -87,29 +159,24 @@
 
         if (somaBase === 0) return alert("Insira pelo menos um valor.");
 
-        // --- DEFINIÇÃO DAS TAXAS ---
         const lucroFixo = 6.00;
         const taxaFixaShopee = 4.00;
+        const comissaoShopee = 0.18; 
+        const taxaT = 0.02;
+        const taxaS = 0.025;
+        const imposto = 0.06;
+        const ads = 0.03;
         
-        // Porcentagens que incidem sobre o preço final:
-        const comissaoShopee = 0.18; // 18%
-        const taxaT = 0.02;          // 2%
-        const taxaS = 0.025;         // 2.5%
-        const imposto = 0.06;        // 6%
-        const ads = 0.03;            // 3%
-        
-        const totalPorcentagens = comissaoShopee + taxaT + taxaS + imposto + ads; // 31.5% (0.315)
-        const divisor = 1 - totalPorcentagens; // 0.685
+        const totalPorcentagens = comissaoShopee + taxaT + taxaS + imposto + ads; 
+        const divisor = 1 - totalPorcentagens; 
 
-        // Fórmula de Markup Divisor para garantir lucro e cobrir taxas
         const precoFinal = (somaBase + lucroFixo + taxaFixaShopee) / divisor;
 
-        // Detalhamento para o relatório
         document.getElementById('titulo-relatorio').innerText = document.getElementById('nome-produto-input').value || "Relatório de Custos";
         document.getElementById('detalhes-relatorio').innerHTML = htmlRelatorio;
         document.getElementById('resumo-calculo').innerHTML = `
             <div class="res-linha"><span>Soma Materiais:</span> <span>R$ ${somaBase.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Taxas Shopee (18% + 2% + 2.5%):</span> <span>R$ ${(precoFinal * 0.225).toFixed(2)}</span></div>
+            <div class="res-linha"><span>Taxas Shopee (22.5%):</span> <span>R$ ${(precoFinal * 0.225).toFixed(2)}</span></div>
             <div class="res-linha"><span>Taxa Fixa Shopee:</span> <span>R$ ${taxaFixaShopee.toFixed(2)}</span></div>
             <div class="res-linha"><span>Imposto (6%):</span> <span>R$ ${(precoFinal * 0.06).toFixed(2)}</span></div>
             <div class="res-linha"><span>Ads (3%):</span> <span>R$ ${(precoFinal * 0.03).toFixed(2)}</span></div>
@@ -119,7 +186,9 @@
         document.getElementById('resultado').style.display = 'block';
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
+
+    // Inicia o script
+    init();
 </script>
 </body>
 </html>
-

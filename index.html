@@ -19,6 +19,8 @@
         .btn-add { background: #10b981; color: white; margin-bottom: 20px; }
         .btn-calc { background: var(--primary); color: white; font-size: 1.1em; }
         .btn-print { background: #64748b; color: white; margin-top: 15px; }
+        .btn-clear { background: #f59e0b; color: white; margin-top: 10px; }
+        .btn-clear:hover { background: #d97706; }
         #resultado { margin-top: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px; display: none; }
         .res-linha { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #cbd5e1; }
         .total-final { font-size: 1.4em; font-weight: bold; color: #059669; margin-top: 15px; text-align: right; background: #dcfce7; padding: 10px; border-radius: 4px; }
@@ -48,6 +50,7 @@
     <div id="lista-itens" class="no-print"></div>
 
     <button class="btn btn-add no-print" onclick="adicionarItemCustom('', '')">+ Adicionar Outro Item</button>
+    <button class="btn btn-clear no-print" onclick="limparTudo()">Limpar Tudo / Resetar</button>
     <button class="btn btn-calc no-print" onclick="calcular()">CALCULAR PREÇO DE VENDA</button>
 
     <div id="resultado">
@@ -187,8 +190,20 @@
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
 
+    function limparTudo() {
+    if (confirm("Tem certeza? Isso apagará todos os dados preenchidos desta página.")) {
+        // Remove apenas os dados desta calculadora
+        localStorage.removeItem('calc_nome');
+        localStorage.removeItem('calc_padrao');
+        localStorage.removeItem('calc_custom');
+        // Recarrega a página para vir zerada
+        location.reload();
+    }
+}
+
     // Inicia o script
     init();
 </script>
 </body>
 </html>
+

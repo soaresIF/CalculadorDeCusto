@@ -3,266 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Custo e Venda</title>
+    <title>Calculadora de Venda Shopee Pro</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 10px;
-        }
-
-        .container {
-            width: 95%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-        }
-
-        h1 { text-align: center; color: var(--primary); font-size: 1.5rem; }
-
-        .input-produto {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        .item-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .item-label {
-            flex: 3;
-            min-width: 150px;
-            font-weight: 500;
-            color: #475569;
-            padding: 8px 0;
-        }
-
-        input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        input[type="text"] { flex: 3; min-width: 150px; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .container { width: 95%; max-width: 800px; margin: 0 auto; background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); box-sizing: border-box; }
+        h1 { text-align: center; color: var(--primary); font-size: 1.5rem; margin-bottom: 20px; }
+        .input-produto { width: 100%; padding: 12px; font-size: 1.1em; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }
+        .item-label { flex: 3; min-width: 150px; font-weight: 500; color: #475569; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         input[type="number"] { flex: 1; min-width: 80px; }
-
-        .btn {
-            cursor: pointer;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: 0.3s;
-            display: block;
-        }
-
-        .btn-add { background: #10b981; color: white; margin-bottom: 20px; width: 100%; }
-        .btn-calc { background: var(--primary); color: white; width: 100%; font-size: 1.1em; }
-        .btn-print { background: #64748b; color: white; margin-top: 10px; width: 100%; }
-
-        #resultado {
-            margin-top: 25px;
-            padding: 15px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            display: none;
-            word-wrap: break-word;
-        }
-
-        .res-linha {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            border-bottom: 1px dashed #cbd5e1;
-            font-size: 0.95rem;
-        }
-
-        .total-final {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #059669;
-            margin-top: 15px;
-            text-align: right;
-        }
-
-        .remove-btn { 
-            background: #ef4444; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            padding: 10px 12px; 
-            cursor: pointer; 
-        }
-
-        @media (max-width: 480px) {
-            .item-label, input[type="text"] { flex: 100%; order: 1; }
-            input[type="number"] { flex: 1; order: 2; }
-            .remove-btn { order: 3; }
-        }
-
-        @media print {
-            .no-print, .btn, .remove-btn { display: none !important; }
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; margin: 0; padding: 0; }
-            #resultado { display: block !important; background: white; }
-            input { border: none; background: transparent; }
-            #nome-produto-input { display: none; }
-        }
+        input[type="text"] { flex: 3; min-width: 150px; }
+        .btn { cursor: pointer; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; display: block; width: 100%; margin-top: 10px; }
+        .btn-add { background: #10b981; color: white; margin-bottom: 20px; }
+        .btn-calc { background: var(--primary); color: white; font-size: 1.1em; }
+        .btn-print { background: #64748b; color: white; margin-top: 15px; }
+        #resultado { margin-top: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px; display: none; }
+        .res-linha { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #cbd5e1; }
+        .total-final { font-size: 1.4em; font-weight: bold; color: #059669; margin-top: 15px; text-align: right; background: #dcfce7; padding: 10px; border-radius: 4px; }
+        .remove-btn { background: #ef4444; color: white; border: none; border-radius: 4px; padding: 10px 12px; cursor: pointer; }
+        @media (max-width: 480px) { .item-label, input[type="text"] { flex: 100%; } }
+        @media print { .no-print, .btn, .remove-btn { display: none !important; } .container { box-shadow: none; border: none; width: 100%; } #resultado { display: block !important; background: white; } #nome-produto-input { display: none; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Calculadora de Venda</h1>
-    
     <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência">
 
-    <div id="lista-itens" class="no-print">
-        </div>
+    <div id="lista-itens" class="no-print"></div>
 
-    <button class="btn btn-add no-print" onclick="adicionarItemCustom()">+ Adicionar Novo Item</button>
-    <button class="btn btn-calc no-print" onclick="calcular()">Calcular Preço Final</button>
+    <button class="btn btn-add no-print" onclick="adicionarItemCustom()">+ Adicionar Outro Item</button>
+    <button class="btn btn-calc no-print" onclick="calcular()">CALCULAR PREÇO DE VENDA</button>
 
     <div id="resultado">
-        <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0; font-size: 1.2em;">Relatório de Custos</h2>
+        <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0;">Relatório</h2>
         <div id="detalhes-relatorio"></div>
         <hr>
         <div id="resumo-calculo"></div>
     </div>
-
-    <button class="btn btn-print no-print" onclick="window.print()">Imprimir Relatório</button>
+    <button class="btn btn-print no-print" onclick="window.print()">IMPRIMIR RELATÓRIO</button>
 </div>
 
 <script>
-    const itensPadrao = [
-        "Sola", "Pintura Sola", "Facheta Salto", "Palmilha", "Cabedal", "Estampa", 
-        "Bordado", "Emborrachado", "Enfeite", "Strass", "Tira", "Gorgurão", 
-        "Elastico", "Fivela", "Velcro", "Ilhós", "Cordão", "Caixa", 
-        "Cola/solvente", "Etiqueta", "Linha", "Despesas fixa", "Corte", 
-        "Pesponto", "Montagem", "Enfachetar salto", "Waster","Lucro Fabricação"
-    ];
-
+    const itensPadrao = ["Sola", "Pintura Sola", "Facheta Salto", "Palmilha", "Cabedal", "Estampa", "Bordado", "Emborrachado", "Enfeite", "Strass", "Tira", "Gorgurão", "Elastico", "Fivela", "Velcro", "Ilhós", "Cordão", "Caixa", "Cola/solvente", "Etiqueta", "Linha", "Despesas fixa", "Corte", "Pesponto", "Montagem", "Enfachetar salto", "Waster"];
     const listaDiv = document.getElementById('lista-itens');
 
-    // Função para itens fixos (apenas label + valor)
-    function carregarItensPadrao() {
+    function carregarItens() {
         itensPadrao.forEach(item => {
             const div = document.createElement('div');
             div.className = 'item-row';
-            div.innerHTML = `
-                <div class="item-label">${item}</div>
-                <input type="number" placeholder="R$" step="0.01" class="item-valor" data-nome="${item}">
-                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
-            `;
+            div.innerHTML = `<div class="item-label">${item}</div><input type="number" step="0.01" class="item-valor"><button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
             listaDiv.appendChild(div);
         });
     }
 
-    // Função para itens novos (permite digitar o nome)
     function adicionarItemCustom() {
         const div = document.createElement('div');
         div.className = 'item-row';
-        div.innerHTML = `
-            <input type="text" placeholder="Nome do item" class="item-nome-custom">
-            <input type="number" placeholder="R$" step="0.01" class="item-valor">
-            <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
-        `;
+        div.innerHTML = `<input type="text" placeholder="Nome do item" class="item-nome-custom"><input type="number" step="0.01" class="item-valor"><button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
         listaDiv.appendChild(div);
     }
 
-    carregarItensPadrao();
+    carregarItens();
 
     function calcular() {
-        const nomeProduto = document.getElementById('nome-produto-input').value;
         const rows = document.querySelectorAll('.item-row');
         let somaBase = 0;
         let htmlRelatorio = '';
 
-        if(nomeProduto.trim() !== "") {
-            document.getElementById('titulo-relatorio').innerText = "Produto: " + nomeProduto;
-        } else {
-            document.getElementById('titulo-relatorio').innerText = "Relatório de Custos";
-        }
-
         rows.forEach(row => {
-            const inputValor = row.querySelector('.item-valor');
-            const valor = parseFloat(inputValor.value);
-            
-            if (!isNaN(valor) && valor > 0) {
-                let nomeItem = "";
-                // Verifica se é item padrão (label) ou custom (input)
+            const valInput = row.querySelector('.item-valor');
+            const valor = parseFloat(valInput.value);
+            if (valor > 0) {
                 const label = row.querySelector('.item-label');
-                const inputNomeCustom = row.querySelector('.item-nome-custom');
-                
-                nomeItem = label ? label.innerText : (inputNomeCustom.value || 'Item Extra');
-                
+                const nome = label ? label.innerText : row.querySelector('.item-nome-custom').value;
                 somaBase += valor;
-                htmlRelatorio += `
-                    <div class="res-linha">
-                        <span>${nomeItem}</span>
-                        <span>R$ ${valor.toFixed(2)}</span>
-                    </div>`;
+                htmlRelatorio += `<div class="res-linha"><span>${nome || 'Item'}</span><span>R$ ${valor.toFixed(2)}</span></div>`;
             }
         });
 
-        if (somaBase === 0) {
-            alert("Insira pelo menos um valor.");
-            return;
-        }
+        if (somaBase === 0) return alert("Insira pelo menos um valor.");
 
-        const fixoAdicional = 4;
-        const lucroFixo = 6;
-        const percTaxas = 0.20; 
-        const percImposto = 0.06; 
-        const percAds = 0.03; 
-        const totalPorcentagens = percTaxas + percImposto + percAds;
+        // --- DEFINIÇÃO DAS TAXAS ---
+        const lucroFixo = 6.00;
+        const taxaFixaShopee = 4.00;
+        
+        // Porcentagens que incidem sobre o preço final:
+        const comissaoShopee = 0.18; // 18%
+        const taxaT = 0.02;          // 2%
+        const taxaS = 0.025;         // 2.5%
+        const imposto = 0.06;        // 6%
+        const ads = 0.03;            // 3%
+        
+        const totalPorcentagens = comissaoShopee + taxaT + taxaS + imposto + ads; // 31.5% (0.315)
+        const divisor = 1 - totalPorcentagens; // 0.685
 
-        const subtotal = somaBase + fixoAdicional + lucroFixo;
-        const precoFinal = subtotal / (1 - totalPorcentagens);
+        // Fórmula de Markup Divisor para garantir lucro e cobrir taxas
+        const precoFinal = (somaBase + lucroFixo + taxaFixaShopee) / divisor;
 
-        const valorTaxas = precoFinal * percTaxas;
-        const valorImposto = precoFinal * percImposto;
-        const valorAds = precoFinal * percAds;
-
+        // Detalhamento para o relatório
+        document.getElementById('titulo-relatorio').innerText = document.getElementById('nome-produto-input').value || "Relatório de Custos";
         document.getElementById('detalhes-relatorio').innerHTML = htmlRelatorio;
         document.getElementById('resumo-calculo').innerHTML = `
-            <div class="res-linha"><strong>Soma dos Materiais:</strong> <span>R$ ${somaBase.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Custo Fixo:</span> <span>R$ ${fixoAdicional.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Taxas (20%):</span> <span>R$ ${valorTaxas.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Imposto (6%):</span> <span>R$ ${valorImposto.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Ads (3%):</span> <span>R$ ${valorAds.toFixed(2)}</span></div>
-            <div class="res-linha"><span>Lucro Esperado:</span> <span>R$ ${lucroFixo.toFixed(2)}</span></div>
-            <div class="total-final">Preço Final de Venda: R$ ${precoFinal.toFixed(2)}</div>
+            <div class="res-linha"><span>Soma Materiais:</span> <span>R$ ${somaBase.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Taxas Shopee (18% + 2% + 2.5%):</span> <span>R$ ${(precoFinal * 0.225).toFixed(2)}</span></div>
+            <div class="res-linha"><span>Taxa Fixa Shopee:</span> <span>R$ ${taxaFixaShopee.toFixed(2)}</span></div>
+            <div class="res-linha"><span>Imposto (6%):</span> <span>R$ ${(precoFinal * 0.06).toFixed(2)}</span></div>
+            <div class="res-linha"><span>Ads (3%):</span> <span>R$ ${(precoFinal * 0.03).toFixed(2)}</span></div>
+            <div class="res-linha"><strong>Seu Lucro Limpo:</strong> <strong>R$ ${lucroFixo.toFixed(2)}</strong></div>
+            <div class="total-final">PREÇO DE VENDA: R$ ${precoFinal.toFixed(2)}</div>
         `;
-
         document.getElementById('resultado').style.display = 'block';
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
 </script>
-
 </body>
 </html>
 

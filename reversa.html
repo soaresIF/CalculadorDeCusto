@@ -81,6 +81,10 @@
         }
         button:hover { opacity: 0.9; }
 
+        /* Adicione isso junto com os estilos dos botões */
+        .btn-clear { background: #f59e0b; color: white; margin-top: 10px; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        .btn-clear:hover { background: #d97706; }
+
         #resultado {
             margin-top: 25px;
             display: none;
@@ -154,6 +158,8 @@
             <input type="checkbox" id="chkAds" onchange="salvarReversa()">
         </div>
     </div>
+
+    <button class="btn-clear" onclick="limparReversa()" style="margin-bottom: 15px;">Limpar Dados</button>
 
     <button onclick="calcular()">CALCULAR SOBRA REAL</button>
 
@@ -262,9 +268,23 @@
 
         document.getElementById('resultado').style.display = 'block';
     }
+    function limparReversa() {
+    if (confirm("Tem certeza? Isso apagará os valores inseridos.")) {
+        // Remove apenas os dados da reversa
+        localStorage.removeItem('rev_venda');
+        localStorage.removeItem('rev_custo');
+        localStorage.removeItem('rev_chkShopeePerc');
+        localStorage.removeItem('rev_chkShopeeFixo');
+        localStorage.removeItem('rev_chkImposto');
+        localStorage.removeItem('rev_chkAds');
+        // Recarrega a página
+        location.reload();
+    }
+}
 
     carregarReversa();
 </script>
 
 </body>
+
 </html>

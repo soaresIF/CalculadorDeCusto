@@ -270,27 +270,16 @@
         document.getElementById('resultado').style.display = 'block';
     }
     function limparReversa() {
-    if (confirm("Deseja apagar todos os valores?")) {
-        // 1. Limpa memória do navegador
+    if (confirm("Tem certeza? Isso apagará os valores inseridos.")) {
+        // Remove apenas os dados da reversa
         localStorage.removeItem('rev_venda');
         localStorage.removeItem('rev_custo');
         localStorage.removeItem('rev_chkShopeePerc');
         localStorage.removeItem('rev_chkShopeeFixo');
         localStorage.removeItem('rev_chkImposto');
         localStorage.removeItem('rev_chkAds');
-
-        // 2. ZERA VISUALMENTE OS CAMPOS (Essa é a parte que faltava)
-        document.getElementById('venda').value = "";
-        document.getElementById('custoInserido').value = "";
-        
-        // 3. Reseta checkboxes
-        document.getElementById('chkShopeePerc').checked = true;
-        document.getElementById('chkShopeeFixo').checked = true;
-        document.getElementById('chkImposto').checked = true;
-        document.getElementById('chkAds').checked = false;
-
-        // 4. Esconde o resultado
-        document.getElementById('resultado').style.display = 'none';
+        // Recarrega a página
+        location.reload();
     }
 }
 
@@ -300,4 +289,5 @@
 </body>
 
 </html>
+
 

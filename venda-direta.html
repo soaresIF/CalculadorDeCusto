@@ -102,6 +102,7 @@
 
     <div id="resultado">
         <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0;">Relatório de Venda Direta</h2>
+        <p id="data-impressao" style="text-align: center; font-size: 0.9em; color: #64748b; margin-top: -15px; margin-bottom: 20px;"></p>
         <div id="detalhes-relatorio"></div>
         <hr>
         
@@ -235,6 +236,13 @@
         document.getElementById('valSemNota').innerText = `R$ ${semNota.toFixed(2)}`;
         document.getElementById('valComNota').innerText = `R$ ${comNota.toFixed(2)}`;
 
+        const dataHoje = new Date();
+        const dataFormatada = dataHoje.toLocaleDateString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        
+        document.getElementById('data-impressao').innerText = "Gerado em: " + dataFormatada;
+      
         document.getElementById('resultado').style.display = 'block';
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
@@ -244,6 +252,7 @@
 </body>
 
 </html>
+
 
 
 

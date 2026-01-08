@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Precificação</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --shopee: #ee4d2d;
+            --reversa: #2563eb;
+            --direta: #7c3aed;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 40px;
+            color: #334155;
+            font-size: 2rem;
+        }
+
+        .menu-grid {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 900px;
+        }
+
+        .menu-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 160px;
+            height: 160px;
+            text-decoration: none;
+            border-radius: 25px;
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Estilos específicos de cada botão */
+        .btn-shopee { color: var(--shopee); }
+        .btn-shopee:hover { border-color: var(--shopee); background: #fff5f5; }
+
+        .btn-reversa { color: var(--reversa); }
+        .btn-reversa:hover { border-color: var(--reversa); background: #eff6ff; }
+
+        .btn-direta { color: var(--direta); }
+        .btn-direta:hover { border-color: var(--direta); background: #f5f3ff; }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 15px;
+        }
+
+        .label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .menu-grid { gap: 15px; }
+            .menu-btn { width: 140px; height: 140px; }
+        }
+
+        #marcaDev {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Central de Custos</h1>
+
+
+    <div class="menu-grid">
+        <a href="lojas.html" class="menu-btn btn-shopee">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+            </svg>
+            <span class="label">Calc. Venda<br>Shopee</span>
+        </a>
+
+        <a href="reversa.html" class="menu-btn btn-reversa">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v2h2v5h2v-5h2v-2zm5 5h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <span class="label">Calculadora<br>Reversa</span>
+        </a>
+
+        <a href="venda-direta.html" class="menu-btn btn-direta">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            <span class="label">Venda<br>Direta</span>
+        </a>
+    </div>
+
+    <p id="marcaDev">Desenvolvido por Soares</p>
+
+</body>
+</html>

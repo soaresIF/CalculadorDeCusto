@@ -54,6 +54,7 @@
 
     <div id="resultado">
         <h2 id="titulo-relatorio" style="text-align: center; color: var(--primary); margin-top: 0;">Relatório</h2>
+        <p id="data-impressao" style="text-align: center; font-size: 0.9em; color: #64748b; margin-top: -15px; margin-bottom: 20px;"></p>
         <div id="detalhes-relatorio"></div>
         <hr>
         <div id="resumo-calculo"></div>
@@ -186,6 +187,12 @@
             <div class="res-linha"><strong>Seu Lucro Limpo:</strong> <strong>R$ ${lucroFixo.toFixed(2)}</strong></div>
             <div class="total-final">PREÇO DE VENDA: R$ ${precoFinal.toFixed(2)}</div>
         `;
+
+        const dataHoje = new Date();
+        const dataFormatada = dataHoje.toLocaleDateString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    document.getElementById('data-impressao').innerText = "Gerado em: " + dataFormatada;
         document.getElementById('resultado').style.display = 'block';
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
@@ -207,5 +214,6 @@
 </body>
 
 </html>
+
 
 

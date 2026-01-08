@@ -93,6 +93,15 @@
 <div class="container">
     <h1>Venda Direta (Soma Simples)</h1>
     <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência" oninput="salvarDados()">
+    <div class="file-controls no-print" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <button onclick="exportarDados()" style="background: #0ea5e9; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold;">
+            ⬇ Salvar Arquivo
+        </button>
+        <button onclick="document.getElementById('input-arquivo').click()" style="background: #8b5cf6; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold;">
+            ⬆ Abrir Arquivo
+        </button>
+        <input type="file" id="input-arquivo" accept=".json" style="display: none;" onchange="carregarArquivo(this)">
+    </div>
 
     <div id="lista-itens" class="no-print"></div>
 
@@ -246,12 +255,87 @@
         document.getElementById('resultado').style.display = 'block';
         window.scrollTo({ top: document.getElementById('resultado').offsetTop, behavior: 'smooth' });
     }
+    // --- SISTEMA DE ARQUIVOS (EXPORTAR/IMPORTAR) ---
+
+    function exportarDados() {
+        const nomeArquivo = (document.getElementById('nome-produto-input').value || "produto-sem-nome") + ".json";
+        
+        // 1. Coleta os dados (Mesma lógica do SalvarStorage)
+        const dados = {
+            nome: document.getElementById('nome-produto-input').value,
+            padrao: {},
+            custom: []
+        };
+
+        // Coleta itens padrão
+        document.querySelectorAll('.item-row.padrao .item-valor').forEach(input => {
+            if(input.value) dados.padrao[input.dataset.label] = input.value;
+        });
+
+        // Coleta itens customizados
+        document.querySelectorAll('.item-row.custom').forEach(row => {
+            const nome = row.querySelector('.item-nome-custom').value;
+            const valor = row.querySelector('.item-valor').value;
+            if(nome || valor) dados.custom.push({nome, valor});
+        });
+
+        // 2. Cria o arquivo para download
+        const jsonString = JSON.stringify(dados, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const link = document.createElement("a");
+        
+        link.href = URL.createObjectURL(blob);
+        link.download = nomeArquivo;
+        link.click();
+    }
+
+    function carregarArquivo(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const dados = JSON.parse(e.target.result);
+
+                if (confirm(`Deseja carregar os dados do arquivo "${file.name}"? Isso substituirá o que está na tela.`)) {
+                    // 1. Preenche Nome
+                    document.getElementById('nome-produto-input').value = dados.nome || "";
+
+                    // 2. Preenche Padrão (Limpa antes os atuais para evitar lixo)
+                    document.querySelectorAll('.item-row.padrao .item-valor').forEach(inp => inp.value = "");
+                    for (const [key, value] of Object.entries(dados.padrao || {})) {
+                        const input = document.querySelector(`.item-row.padrao .item-valor[data-label="${key}"]`);
+                        if (input) input.value = value;
+                    }
+
+                    // 3. Preenche Customizados (Remove os atuais e recria)
+                    document.querySelectorAll('.item-row.custom').forEach(el => el.remove());
+                    if (dados.custom && dados.custom.length > 0) {
+                        dados.custom.forEach(item => adicionarItemCustom(item.nome, item.valor));
+                    }
+
+                    // 4. Salva no LocalStorage para não perder se der F5 agora
+                    salvarDados();
+                    alert("Dados carregados com sucesso!");
+                }
+            } catch (erro) {
+                alert("Erro ao ler arquivo. Verifique se é um backup válido.");
+                console.error(erro);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Limpa o input para permitir carregar o mesmo arquivo 2x seguidas se precisar
+        input.value = ""; 
+    }
 
     init();
 </script>
 </body>
 
 </html>
+
 
 
 

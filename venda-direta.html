@@ -94,9 +94,6 @@
     <h1>Venda Direta (Soma Simples)</h1>
     <input type="text" id="nome-produto-input" class="input-produto no-print" placeholder="Nome do Produto / Referência" oninput="salvarDados()">
     <div class="file-controls no-print" style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <button onclick="exportarDados()" style="background: #068c0a; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold;">
-            ⬇ Salvar Arquivo
-        </button>
         <button onclick="document.getElementById('input-arquivo').click()" style="background: #8b5cf6; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold;">
             ⬆ Abrir Arquivo
         </button>
@@ -106,7 +103,9 @@
     <div id="lista-itens" class="no-print"></div>
 
     <button class="btn btn-add no-print" onclick="adicionarItemCustom('', '')">+ Adicionar Outro Item</button>
-    
+    <button class="btn btn-add no-print" onclick="exportarDados()" style="background: #0ea5e9; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        ⬇ Salvar Arquivo
+    </button>
     <button class="btn btn-calc no-print" onclick="calcular()">CALCULAR CUSTOS</button>
 
     <div id="resultado">
@@ -335,6 +334,7 @@
 </body>
 
 </html>
+
 
 
 

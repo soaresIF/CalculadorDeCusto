@@ -80,12 +80,16 @@
         }
         button:hover { opacity: 0.9; }
 
-        .btn-calc { background: var(--shopee); color: white; }
+        /* Ajuste de espaçamento dos botões aqui */
+        .btn-calc { 
+            background: var(--shopee); 
+            color: white; 
+            margin-bottom: 15px; /* Espaço entre os botões */
+        }
         
         .btn-clear { 
             background: var(--warning); 
             color: white; 
-            margin-bottom: 15px;
         }
 
         #resultado {
@@ -134,17 +138,17 @@
     
     <div class="form-group">
         <label>Preço de Venda (Anunciado)</label>
-        <input type="number" id="venda" placeholder="ex: 41.90" step="0.01" oninput="salvarReversa()">
+        <input type="number" id="venda" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="form-group">
         <label>Custo Inserido (Material + Lucro)</label>
-        <input type="number" id="custoInserido" placeholder="ex: 27.44" step="0.01" oninput="salvarReversa()">
+        <input type="number" id="custoInserido" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="form-group">
-        <label>Mão de Obra / Lucro Esperado (ex: 5.00)</label>
-        <input type="number" id="lucroEsperado" placeholder="0.00" step="0.01" oninput="salvarReversa()">
+        <label>Mão de Obra / Lucro Esperado</label>
+        <input type="number" id="lucroEsperado" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="opcoes">
@@ -194,7 +198,7 @@
     function salvarReversa() {
         localStorage.setItem('rev_venda', document.getElementById('venda').value);
         localStorage.setItem('rev_custo', document.getElementById('custoInserido').value);
-        localStorage.setItem('rev_lucro', document.getElementById('lucroEsperado').value); // SALVA NOVO CAMPO
+        localStorage.setItem('rev_lucro', document.getElementById('lucroEsperado').value);
         
         localStorage.setItem('rev_chkShopeePerc', document.getElementById('chkShopeePerc').checked);
         localStorage.setItem('rev_chkShopeeFixo', document.getElementById('chkShopeeFixo').checked);
@@ -205,7 +209,7 @@
     function carregarReversa() {
         if(localStorage.getItem('rev_venda')) document.getElementById('venda').value = localStorage.getItem('rev_venda');
         if(localStorage.getItem('rev_custo')) document.getElementById('custoInserido').value = localStorage.getItem('rev_custo');
-        if(localStorage.getItem('rev_lucro')) document.getElementById('lucroEsperado').value = localStorage.getItem('rev_lucro'); // CARREGA NOVO CAMPO
+        if(localStorage.getItem('rev_lucro')) document.getElementById('lucroEsperado').value = localStorage.getItem('rev_lucro');
         
         if(localStorage.getItem('rev_chkShopeePerc') !== null) 
             document.getElementById('chkShopeePerc').checked = (localStorage.getItem('rev_chkShopeePerc') === 'true');
@@ -220,13 +224,13 @@
             document.getElementById('chkAds').checked = (localStorage.getItem('rev_chkAds') === 'true');
     }
 
-    // --- FUNÇÃO DE LIMPEZA VISUAL (MELHORADA) ---
+    // --- FUNÇÃO DE LIMPEZA VISUAL ---
     function limparReversa() {
         if (confirm("Deseja apagar todos os valores?")) {
             // 1. Limpa memória
             localStorage.removeItem('rev_venda');
             localStorage.removeItem('rev_custo');
-            localStorage.removeItem('rev_lucro'); // LIMPA NOVO CAMPO
+            localStorage.removeItem('rev_lucro');
             localStorage.removeItem('rev_chkShopeePerc');
             localStorage.removeItem('rev_chkShopeeFixo');
             localStorage.removeItem('rev_chkImposto');
@@ -235,7 +239,7 @@
             // 2. Limpa visualmente
             document.getElementById('venda').value = "";
             document.getElementById('custoInserido').value = "";
-            document.getElementById('lucroEsperado').value = ""; // LIMPA VISUALMENTE
+            document.getElementById('lucroEsperado').value = "";
             
             // 3. Reseta checkboxes
             document.getElementById('chkShopeePerc').checked = true;
@@ -260,7 +264,6 @@
         }
 
         // 1. Calcular o Material Real (Valor Inserido - Lucro Esperado)
-        // Antes era fixo 5.00, agora é a variável
         const custoMaterialReal = custoInserido - lucroEsperado;
 
         // 2. Taxas Shopee
@@ -294,7 +297,7 @@
 
         const box = document.querySelector('.final-box');
         
-        // Lógica de Cores Atualizada
+        // Lógica de Cores
         if (sobraFinal < 0) {
             // Prejuízo real
             finalElement.style.color = "#dc3545"; // Vermelho

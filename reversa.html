@@ -13,6 +13,7 @@
             --text: #212529;
             --green: #198754;
             --blue: #0d6efd;
+            --warning: #f59e0b;
         }
 
         body {
@@ -69,8 +70,6 @@
 
         button {
             width: 100%;
-            background: var(--shopee);
-            color: white;
             border: none;
             padding: 15px;
             border-radius: 8px;
@@ -81,9 +80,13 @@
         }
         button:hover { opacity: 0.9; }
 
-          /* Adicione isso junto com os estilos dos botões */
-        .btn-clear { background: #f59e0b; color: white; margin-top: 10px; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        .btn-clear:hover { background: #d97706; }
+        .btn-calc { background: var(--shopee); color: white; }
+        
+        .btn-clear { 
+            background: var(--warning); 
+            color: white; 
+            margin-bottom: 15px;
+        }
 
         #resultado {
             margin-top: 25px;
@@ -111,7 +114,6 @@
         .final-valor { font-size: 2.2rem; font-weight: bold; color: var(--green); display: block; }
         .final-label { font-size: 0.9rem; color: #0f5132; }
         
-        /* Ajuste do botão de navegação */
         .nav-container { text-align: center; margin-bottom: 15px; }
 
     </style>
@@ -121,8 +123,8 @@
 <div class="nav-container">
     <a href="index.html"
     style="color: white; text-decoration: none; background-color: rgb(0, 0, 0); padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
-    onmouseover="this.style.backgroundColor='#b91c1c'"
-    onmouseout="this.style.backgroundColor='rgb(0, 68, 255)'">
+    onmouseover="this.style.backgroundColor='#333'"
+    onmouseout="this.style.backgroundColor='rgb(0, 0, 0)'">
     Voltar para Central de Custos
     </a>
 </div>
@@ -132,12 +134,17 @@
     
     <div class="form-group">
         <label>Preço de Venda (Anunciado)</label>
-        <input type="number" id="venda"  step="0.01" oninput="salvarReversa()">
+        <input type="number" id="venda" placeholder="ex: 41.90" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="form-group">
-        <label>Custo Inserido (Material + 5,00)</label>
-        <input type="number" id="custoInserido"  step="0.01"  oninput="salvarReversa()">
+        <label>Custo Inserido (Material + Lucro)</label>
+        <input type="number" id="custoInserido" placeholder="ex: 27.44" step="0.01" oninput="salvarReversa()">
+    </div>
+
+    <div class="form-group">
+        <label>Mão de Obra / Lucro Esperado (ex: 5.00)</label>
+        <input type="number" id="lucroEsperado" placeholder="0.00" step="0.01" oninput="salvarReversa()">
     </div>
 
     <div class="opcoes">
@@ -159,8 +166,8 @@
         </div>
     </div>
 
-    <button onclick="calcular()">CALCULAR SOBRA REAL</button>
-    <button class="btn-clear" onclick="limparReversa()" style="margin-bottom: 15px;">Limpar Dados</button>
+    <button class="btn-calc" onclick="calcular()">CALCULAR SOBRA REAL</button>
+    <button class="btn-clear" onclick="limparReversa()">Limpar Dados</button>
 
     <div id="resultado">
         <div class="line"><span>Venda Bruta:</span> <span class="destaque">R$ <span id="resVenda">0,00</span></span></div>
@@ -170,7 +177,7 @@
         <div style="margin-top: 10px;"></div>
         
         <div class="line"><span>(-) Custo Real Material:</span> <span class="negativo" id="resMaterialReal">0,00</span></div>
-        <span class="info-sub" id="txtExplicaMaterial">(27.44 - 5.00 da mão de obra)</span>
+        <span class="info-sub" id="txtExplicaMaterial"></span>
 
         <div class="line"><span>(-) Imposto (se marcado):</span> <span class="negativo" id="resImposto">0,00</span></div>
         <div class="line"><span>(-) Ads (se marcado):</span> <span class="negativo" id="resAds">0,00</span></div>
@@ -187,6 +194,8 @@
     function salvarReversa() {
         localStorage.setItem('rev_venda', document.getElementById('venda').value);
         localStorage.setItem('rev_custo', document.getElementById('custoInserido').value);
+        localStorage.setItem('rev_lucro', document.getElementById('lucroEsperado').value); // SALVA NOVO CAMPO
+        
         localStorage.setItem('rev_chkShopeePerc', document.getElementById('chkShopeePerc').checked);
         localStorage.setItem('rev_chkShopeeFixo', document.getElementById('chkShopeeFixo').checked);
         localStorage.setItem('rev_chkImposto', document.getElementById('chkImposto').checked);
@@ -196,6 +205,7 @@
     function carregarReversa() {
         if(localStorage.getItem('rev_venda')) document.getElementById('venda').value = localStorage.getItem('rev_venda');
         if(localStorage.getItem('rev_custo')) document.getElementById('custoInserido').value = localStorage.getItem('rev_custo');
+        if(localStorage.getItem('rev_lucro')) document.getElementById('lucroEsperado').value = localStorage.getItem('rev_lucro'); // CARREGA NOVO CAMPO
         
         if(localStorage.getItem('rev_chkShopeePerc') !== null) 
             document.getElementById('chkShopeePerc').checked = (localStorage.getItem('rev_chkShopeePerc') === 'true');
@@ -210,17 +220,48 @@
             document.getElementById('chkAds').checked = (localStorage.getItem('rev_chkAds') === 'true');
     }
 
+    // --- FUNÇÃO DE LIMPEZA VISUAL (MELHORADA) ---
+    function limparReversa() {
+        if (confirm("Deseja apagar todos os valores?")) {
+            // 1. Limpa memória
+            localStorage.removeItem('rev_venda');
+            localStorage.removeItem('rev_custo');
+            localStorage.removeItem('rev_lucro'); // LIMPA NOVO CAMPO
+            localStorage.removeItem('rev_chkShopeePerc');
+            localStorage.removeItem('rev_chkShopeeFixo');
+            localStorage.removeItem('rev_chkImposto');
+            localStorage.removeItem('rev_chkAds');
+
+            // 2. Limpa visualmente
+            document.getElementById('venda').value = "";
+            document.getElementById('custoInserido').value = "";
+            document.getElementById('lucroEsperado').value = ""; // LIMPA VISUALMENTE
+            
+            // 3. Reseta checkboxes
+            document.getElementById('chkShopeePerc').checked = true;
+            document.getElementById('chkShopeeFixo').checked = true;
+            document.getElementById('chkImposto').checked = true;
+            document.getElementById('chkAds').checked = false;
+
+            // 4. Esconde resultado
+            document.getElementById('resultado').style.display = 'none';
+        }
+    }
+
     function calcular() {
         const venda = parseFloat(document.getElementById('venda').value);
         const custoInserido = parseFloat(document.getElementById('custoInserido').value);
+        // Pega o valor do lucro esperado, se estiver vazio assume 0
+        const lucroEsperado = parseFloat(document.getElementById('lucroEsperado').value) || 0;
 
         if (isNaN(venda) || isNaN(custoInserido)) {
             alert("Preencha os valores de venda e custo.");
             return;
         }
 
-        // 1. Calcular o Material Real (Valor Inserido - 5,00)
-        const custoMaterialReal = custoInserido - 5.00;
+        // 1. Calcular o Material Real (Valor Inserido - Lucro Esperado)
+        // Antes era fixo 5.00, agora é a variável
+        const custoMaterialReal = custoInserido - lucroEsperado;
 
         // 2. Taxas Shopee
         let valShopeePerc = document.getElementById('chkShopeePerc').checked ? (venda * 0.225) : 0;
@@ -242,7 +283,8 @@
         document.getElementById('resLiquido').innerText = liquidoShopee.toFixed(2);
         
         document.getElementById('resMaterialReal').innerText = `- R$ ${custoMaterialReal.toFixed(2)}`;
-        document.getElementById('txtExplicaMaterial').innerText = `(Valor inserido R$ ${custoInserido.toFixed(2)} - R$ 5,00)`;
+        // Texto dinâmico na explicação
+        document.getElementById('txtExplicaMaterial').innerText = `(Valor inserido R$ ${custoInserido.toFixed(2)} - R$ ${lucroEsperado.toFixed(2)} da mão de obra)`;
 
         document.getElementById('resImposto').innerText = `- R$ ${valImposto.toFixed(2)}`;
         document.getElementById('resAds').innerText = `- R$ ${valAds.toFixed(2)}`;
@@ -251,15 +293,20 @@
         finalElement.innerText = `R$ ${sobraFinal.toFixed(2)}`;
 
         const box = document.querySelector('.final-box');
+        
+        // Lógica de Cores Atualizada
         if (sobraFinal < 0) {
+            // Prejuízo real
             finalElement.style.color = "#dc3545"; // Vermelho
             box.style.background = "#f8d7da";
             box.style.borderColor = "#f5c6cb";
-        } else if (sobraFinal < 5) {
+        } else if (sobraFinal < lucroEsperado) {
+            // Lucro positivo, mas menor que o esperado
             finalElement.style.color = "#fd7e14"; // Laranja
             box.style.background = "#fff3cd";
             box.style.borderColor = "#ffecb5";
         } else {
+            // Lucro igual ou maior que o esperado
             finalElement.style.color = "#198754"; // Verde
             box.style.background = "#d1e7dd";
             box.style.borderColor = "#badbcc";
@@ -267,20 +314,6 @@
 
         document.getElementById('resultado').style.display = 'block';
     }
-    function limparReversa() {
-    if (confirm("Tem certeza? Isso apagará os valores inseridos.")) {
-        // Remove apenas os dados da reversa
-        localStorage.removeItem('rev_venda');
-        localStorage.removeItem('rev_custo');
-        localStorage.removeItem('rev_chkShopeePerc');
-        localStorage.removeItem('rev_chkShopeeFixo');
-        localStorage.removeItem('rev_chkImposto');
-        localStorage.removeItem('rev_chkAds');
-        // Recarrega a página
-        location.reload();
-    }
-}
-
 
     carregarReversa();
 </script>
